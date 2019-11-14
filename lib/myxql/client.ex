@@ -74,10 +74,13 @@ defmodule MyXQL.Client do
         :tcp ->
           hostname = String.to_charlist(hostname || "localhost")
           default_port = String.to_integer(System.get_env("MYSQL_TCP_PORT") || "3306")
-          port = Keyword.get(opts, :port, default_port)
+          port = Keyword.get(opts, :port, default_port) |> normalize_port()
           {hostname, port}
       end
     end
+
+    defp normalize_port(port) when is_binary(port), do: String.to_integer(port)
+    defp normalize_port(port) when is_integer(port), do: port
   end
 
   @default_max_packet_size 16_777_215
